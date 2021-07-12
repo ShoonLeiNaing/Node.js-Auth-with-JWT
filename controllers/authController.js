@@ -1,6 +1,7 @@
 import User from '../models/userModel.js'
 import {registerValidation} from '../utils/validation.js'
-import Joi from '@hapi/joi'
+import bcrypt from 'bcrypt'
+
 
 export const register=async (req,res)=>{
     //validation 
@@ -15,11 +16,15 @@ export const register=async (req,res)=>{
         return res.status(400).send("User already existed with that email")
     }
 
+    //hashing password
+    const salt=await bcrypt.genSalt(10)
+    const hashPassword=await bcrypt.hash(req.body.password,salt)
+
     //creating new user
     const user = new User({
         username:req.body.username,
         email:req.body.email,
-        password:req.body.password,
+        password:hashPassword,
     })
     user.save()
     .then((data)=>{
