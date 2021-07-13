@@ -18,8 +18,8 @@ app.get('/',(req,res)=>{
     res.send("Hello this is running")
 })
 app.use('/upload',express.static('upload'))
-app.use('/blog',blogRoutes)
-app.use('/user',authRoutes)
+app.use('/blogs',blogRoutes)
+app.use('/users',authRoutes)
 
 //db connect
 mongoose.connect(process.env.MONGODB_URL,

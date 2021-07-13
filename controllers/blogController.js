@@ -1,13 +1,14 @@
 import Blog from '../models/blogModel.js'
+import fs from 'fs'
 
 
 export const getBlogs =(req,res)=>{
-    Blog.find()
+    Blog.find().sort({createdAt:-1})
     .then(data=>{
-        res.json(data)
+        res.status(200).send(data)
     })
     .catch(err=>{
-        console.log(err)
+        res.status(400).send(err.message)
     })
 }
 
@@ -20,46 +21,52 @@ export const createBlog=(req,res)=>{
     })
     blog.save()
     .then((data)=>{
-        res.json(data)
+        res.status(201).send(data)
     })
     .catch((err)=>{
-        console.log(err)
+        res.status(400).send(err.message)
     })
 }
 
 export const getBlogDetail=(req,res)=>{
     Blog.findById(req.params.id)
-    .then((data)=>{
-        res.json(data)
+    .then(data=>{
+        res.status(200).send(data)
     })
-    .catch((err)=>{
-        console.log(err)
+    .catch(err=>{
+        res.status(400).send(err.message)
     })
 }
 
 export const deleteBlog=(req,res)=>{
-    Blog.findOneAndDelete(req.params.id)
+    Blog.findOneAndDelete({_id:req.params.id})
     .then((data)=>{
-        res.json(data)
+        res.status(200).send("Blod deleted successfully")
+        fs.unlink(data.image,err=>{
+            if(err)
+                console.log(err)
+        })
     })
     .catch((err)=>{
-        console.log(err)
+        res.status(400).send(err.message)
     })
 }
 
-export const updateBlog=(req,res)=>{
+export const updateBlog=async (req,res)=>{
+    const blog=await Blog.findById(req.params.id)
+    req.body.image=req.file?req.file.path:blog.image;
+    if(req.file){
+        fs.unlink(blog.image,(err)=>{
+            if(err)
+                console.log(err)
+        })
+    }
     Blog.findOneAndUpdate({_id:req.params.id},req.body,{new:true})
-    .then((data)=>{
-        res.json(data)
+    .then(data=>{
+        res.status(200).send(data)
     })
-    .catch((err)=>{
-        console.log(err)
+    .catch(err=>{
+        res.status(400).send(err.message)
     })
 }
 
-export const imageUpload=(req,res)=>{
-    console.log(req.file);
-    res.send("Done")
-    // res.status(201).json({"image":"uploaded"})
-
-}
