@@ -3,6 +3,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import blogRoutes from './routes/blogRoutes.js'
 import authRoutes from './routes/authRoutes.js'
+import {verifyToken} from './utils/verifyToken.js'
 
 const app = express();
 const port = 4000;
@@ -18,7 +19,7 @@ app.get('/',(req,res)=>{
     res.send("Hello this is running")
 })
 app.use('/upload',express.static('upload'))
-app.use('/blogs',blogRoutes)
+app.use('/blogs',verifyToken,blogRoutes)
 app.use('/users',authRoutes)
 
 //db connect

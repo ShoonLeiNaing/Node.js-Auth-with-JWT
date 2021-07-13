@@ -9,4 +9,10 @@ export const registerValidation=(data)=>{
     return schema.validate(data)
 }
 
-
+export const loginValidation=(data)=>{
+    const schema=Joi.object({
+        email:Joi.string().required().email(),
+        password:Joi.string(),
+    })
+    return schema.validate(data)
+}
